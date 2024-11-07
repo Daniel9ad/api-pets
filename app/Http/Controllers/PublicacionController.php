@@ -7,12 +7,47 @@ use App\Models\Publicacion;
 
 class PublicacionController extends Controller
 {
-    public function listarMascotasDisponibles()
+    public function index()
     {
-        $mascotas = Publicacion::where('estado', 'disponible')
-            // ->with(['mascota', 'imagenes', 'usuario'])
-            ->get();
+        $publicaciones = Publicacion::all();
+        return response()->json($publicaciones, 200);
+    }
 
-        return response()->json($mascotas);
+    public function store(Request $request)
+    {
+        $publicacion = Publicacion::create($request->all());
+        return response()->json($publicacion, 201);
+    }
+
+    public function show($id)
+    {
+        $publicacion = Publicacion::find($id);
+        if ($publicacion) {
+            return response()->json($publicacion, 200);
+        } else {
+            return response()->json('Publicacion no encontrada', 404);
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+        $publicacion = Publicacion::find($id);
+        if ($publicacion) {
+            $publicacion->update($request->all());
+            return response()->json($publicacion, 200);
+        } else {
+            return response()->json('Publicacion no encontrada', 404);
+        }
+    }
+
+    public function destroy($id)
+    {
+        $publicacion = Publicacion::find($id);
+        if ($publicacion) {
+            $publicacion->delete();
+            return response()->json('Publicacion eliminada', 200);
+        } else {
+            return response()->json('Publicacion no encontrada', 404);
+        }
     }
 }
