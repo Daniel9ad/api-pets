@@ -3,12 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Carbon\Carbon;
 
 class Publicacion extends Model
 {
+    use HasFactory;
     protected $table = 'publicaciones';
     protected $fillable = [
+        
         'titulo',
         'descripcion',
         'raza',
@@ -42,4 +45,10 @@ class Publicacion extends Model
     {
         $this->attributes['fecha_publicacion'] = Carbon::now();
     }
+    public function imagenes()
+{
+    return $this->hasMany(ImagenMascota::class, 'id_publicacion');
+}
+
+
 }

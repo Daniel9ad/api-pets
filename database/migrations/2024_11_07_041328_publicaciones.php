@@ -12,6 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('publicaciones', function (Blueprint $table) {
+            
+  
             $table->id();
             $table->string('titulo');
             $table->text('descripcion');
@@ -25,7 +27,8 @@ return new class extends Migration
             $table->foreignId('usuario_id')->constrained('usuarios');
             $table->foreignId('ciudad_id')->constrained('ciudades');
             $table->foreignId('especie_id')->constrained('especies');
-            $table->timestamps();                        
+            $table->timestamps();
+            
         });
     }
 
@@ -34,6 +37,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        //
         Schema::dropIfExists('publicaciones');
     }
 };

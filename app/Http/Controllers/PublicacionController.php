@@ -4,9 +4,38 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Publicacion;
+use App\Models\ImagenMascota;
+use Illuminate\Support\Facades\Storage;
+
 
 class PublicacionController extends Controller
 {
+public function listarMascotasDisponibles()
+{
+    $publicaciones = Publicacion::where('estado', true)
+        ->get(['id','titulo', 'edad', 'raza', 'ciudad_id', 'estado'])
+        ->map(function ($publicacion) {
+            return [
+                'titulo' => $publicacion->titulo,
+                'edad' => $publicacion->edad,
+                'raza' => $publicacion->raza,
+                'ciudad' => $publicacion->ciudad->nombre,
+                'imagen' =>$imagenes = ImagenMascota::where('id_publicacion',$publicacion->id )->get('urlIMG')->first(),
+                'disponible' => $publicacion->estado,
+            ];
+        });
+
+
+
+    return response()->json($publicaciones, 200);
+}
+
+
+
+
+
+
+    
     public function index()
     {
         $publicaciones = Publicacion::all();
