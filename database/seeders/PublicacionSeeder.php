@@ -52,7 +52,7 @@ class PublicacionSeeder extends Seeder
                 'cantidad_hembras' => 1,
                 'telefono' => '1122334455',
                 'fecha_publicacion' => Carbon::now(),
-                'estado' => true,
+                'estado' => false,
                 'usuario_id' => 3,
                 'ciudad_id' => 3,
                 'especie_id' => 1,                
