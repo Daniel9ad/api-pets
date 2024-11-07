@@ -3,30 +3,43 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Publicacion extends Model
 {
+    protected $table = 'publicaciones';
     protected $fillable = [
-        'id_usuario',
-        'id_mascota',
         'titulo',
         'descripcion',
-        'tipo_publicacion',
+        'raza',
+        'edad',
+        'cantidad_machos',
+        'cantidad_hembras',
+        'telefono',
         'fecha_publicacion',
         'estado',
+        'usuario_id',
+        'ciudad_id',
+        'especie_id',
     ];
-    // public function usuario()
-    // {
-    //     return $this->belongsTo(Usuario::class, 'id_usuario');
-    // }
 
-    // public function mascota()
-    // {
-    //     return $this->hasOne(Mascota::class, 'id_mascota');
-    // }
+    public function usuario()
+    {
+        return $this->belongsTo(Usuario::class, 'usuario_id');
+    }
 
-    // public function imagenes()
-    // {
-    //     return $this->hasMany(ImagenMascota::class, 'id_publicacion');
-    // }
+    public function ciudad()
+    {
+        return $this->belongsTo(Ciudad::class, 'ciudad_id');
+    }
+
+    public function especie()
+    {
+        return $this->belongsTo(Especie::class, 'especie_id');
+    }
+
+    public function setFechaPublicacionAttribute($value)
+    {
+        $this->attributes['fecha_publicacion'] = Carbon::now();
+    }
 }
