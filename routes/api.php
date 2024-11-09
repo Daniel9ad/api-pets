@@ -15,6 +15,8 @@ Route::get('/user', function (Request $request) {
 Route::get('/publicaciones/disponibles', [PublicacionController::class, 'listarMascotasDisponibles']);
 Route::get('/publicaciones/images', [PublicacionController::class, 'indeximages']);
 Route::post('/subir-imagen', [PublicacionController::class, 'subirImagen']);
+//para ublicacion id
+Route::get('/publicacion/{id}', [PublicacionController::class, 'mostrarPublicacion']);
 
 
 Route::apiResource('publicaciones', PublicacionController::class);
