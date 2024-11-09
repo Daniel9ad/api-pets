@@ -10,21 +10,37 @@ use Illuminate\Support\Facades\Storage;
 
 class PublicacionController extends Controller
 {
-    public function listarMascotasDisponibles()
+
+    public function listarMascotasDisponibles(Request $request)
     {
-        $publicaciones = Publicacion::where('estado', true)
-            ->get(['id','titulo', 'edad', 'raza', 'ciudad_id', 'estado'])
+        $especieId = $request->query('especie');
+        $query = Publicacion::where('estado', true);
+    
+        if ($especieId !== null) {
+            $query->where('especie_id', $especieId);
+        }
+    
+        $publicaciones = $query->get(['id', 'titulo', 'edad', 'raza', 'ciudad_id', 'estado', 'especie_id'])
             ->map(function ($publicacion) {
                 return [
+                    'id' => $publicacion->id,
                     'titulo' => $publicacion->titulo,
                     'edad' => $publicacion->edad,
                     'raza' => $publicacion->raza,
-                    'ciudad' => $publicacion->ciudad->nombre,
-                    'imagen' =>$imagenes = ImagenMascota::where('id_publicacion',$publicacion->id )->get('urlIMG')->first(),
+                    'ciudad' => $publicacion->ciudad ? $publicacion->ciudad->nombre : 'Desconocido',
+                    'imagen' => ImagenMascota::where('id_publicacion', $publicacion->id)->get('urlIMG')->first() ?? 'https://via.placeholder.com/150',
                     'disponible' => $publicacion->estado,
+                    'especie' => $publicacion->especie_id,
                 ];
             });
-
+    
+        return response()->json([
+            'transaction' => true,
+            'message' => 'mascotas disponibles',
+            'data' => $publicaciones
+        ], 200);
+    }
+    
 
 
         return response()->json($publicaciones, 200);

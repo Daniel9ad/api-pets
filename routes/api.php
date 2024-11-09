@@ -13,6 +13,7 @@ Route::get('/user', function (Request $request) {
 
 
 Route::get('/publicaciones/disponibles', [PublicacionController::class, 'listarMascotasDisponibles']);
+Route::get('/publicaciones/disponibles/{id_mascota}', [PublicacionController::class, 'filtrarMascotasDisponibles']);
 Route::get('/publicaciones/images', [PublicacionController::class, 'indeximages']);
 Route::post('/subir-imagen', [PublicacionController::class, 'subirImagen']);
 //para ublicacion id
