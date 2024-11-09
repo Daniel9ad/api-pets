@@ -38,6 +38,19 @@ class ImagenMascotaSeeder extends Seeder
                 'id_publicacion' => 4,
                 'urlIMG' => 'https://example.com/images/persa1.jpg',
             ],
+            [
+                'id_publicacion' => 5,
+                'urlIMG' => 'https://example.com/images/persa1.jpg',
+            ],
+            [
+                'id_publicacion' => 6,
+                'urlIMG' => 'https://example.com/images/persa1.jpg',
+            ],
+            [
+                'id_publicacion' => 7,
+                'urlIMG' => 'https://example.com/images/persa1.jpg',
+            ],
+
         ];
 
         foreach ($imagenes as $imagen) {
