@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 
 class PublicacionController extends Controller
 {
+
     public function listarMascotasDisponibles(Request $request)
     {
         $especieId = $request->query('especie');
@@ -41,6 +42,67 @@ class PublicacionController extends Controller
     }
     
 
+
+        return response()->json($publicaciones, 200);
+    }
+
+
+    //funcion para mostrar una publicacion en especifico
+    public function mostrarPublicacion($id)
+    {
+        // Recuperamos la publicación junto con las relaciones necesarias
+        $publicacion = Publicacion::with(['ciudad', 'usuario', 'especie'])
+            ->find($id, [
+                'id',
+                'titulo',
+                'descripcion',
+                'raza',
+                'edad',
+                'cantidad_machos',
+                'cantidad_hembras',
+                'telefono',
+                'fecha_publicacion',
+                'ciudad_id',
+                'estado',
+                'usuario_id',
+                'especie_id'
+            ]);
+
+        // Verificamos si la publicación no existe
+        if (!$publicacion) {
+            return response()->json([
+                'transaction' => false,
+                'message' => 'Publicación no encontrada'
+            ], 404);
+        }
+
+        // Obtenemos todas las imágenes asociadas a la publicación
+        $imagenes = ImagenMascota::where('id_publicacion', $publicacion->id)
+            ->pluck('urlIMG');
+
+        // Formamos los datos de la respuesta
+        $publicacionData = [
+            'titulo' => $publicacion->titulo,
+            'descripcion' => $publicacion->descripcion,
+            'raza' => $publicacion->raza,
+            'edad' => $publicacion->edad,
+            'cantidad_machos' => $publicacion->cantidad_machos,
+            'cantidad_hembras' => $publicacion->cantidad_hembras,
+            'telefono' => $publicacion->telefono,
+            'fecha_publicacion' => $publicacion->fecha_publicacion,
+            'ciudad' => $publicacion->ciudad ? $publicacion->ciudad->nombre : 'Sin ciudad',
+            'estado' => $publicacion->estado,
+            'usuario' => $publicacion->usuario ? $publicacion->usuario->nombre : 'Sin usuario',
+            'especie' => $publicacion->especie ? $publicacion->especie->nombre : 'Sin especie',
+            'imagenes' => $imagenes, // Devolvemos todas las imágenes
+        ];
+
+        // Retornamos la respuesta en formato JSON
+        return response()->json([
+            'transaction' => true,
+            'data' => $publicacionData
+        ]);
+    }
 
 
 
