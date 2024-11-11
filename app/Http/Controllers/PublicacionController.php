@@ -43,9 +43,6 @@ class PublicacionController extends Controller
     
 
 
-        return response()->json($publicaciones, 200);
-    }
-
 
     //funcion para mostrar una publicacion en especifico
     public function mostrarPublicacion($id)
