@@ -22,3 +22,7 @@ Route::get('/publicacion/{id}', [PublicacionController::class, 'mostrarPublicaci
 
 Route::apiResource('publicaciones', PublicacionController::class);
 Route::apiResource('usuarios', UsuarioController::class);
+
+
+// para crear pubicaiones 
+Route::post('/crearpublicacion', [PublicacionController::class, 'publicar']);
