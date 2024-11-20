@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PublicacionController;
@@ -26,3 +27,5 @@ Route::apiResource('usuarios', UsuarioController::class);
 
 // para crear pubicaiones 
 Route::post('/crearpublicacion', [PublicacionController::class, 'publicar']);
+
+Route::post('/login', [AuthController::class, 'login']);
