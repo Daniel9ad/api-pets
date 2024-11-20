@@ -11,21 +11,21 @@ use Illuminate\Support\Facades\Storage;
 class PublicacionController extends Controller
 {
 
-      public function listarMascotasDisponibles(Request $request)
+    public function listarMascotasDisponibles(Request $request)
     {
         $especieId = $request->query('especie');
         $query = Publicacion::where('estado', true);
-    
+
         if ($especieId !== null) {
             $query->where('especie_id', $especieId);
         }
-    
+
         $publicaciones = $query->get(['id', 'titulo', 'edad', 'raza', 'ciudad_id', 'estado', 'especie_id'])
             ->map(function ($publicacion) {
                 $imagen = ImagenMascota::where('id_publicacion', $publicacion->id)
                     ->pluck('urlIMG')
                     ->first();
-    
+
                 return [
                     'id' => $publicacion->id,
                     'titulo' => $publicacion->titulo,
@@ -37,7 +37,7 @@ class PublicacionController extends Controller
                     'especie' => $publicacion->especie_id,
                 ];
             });
-    
+
         return response()->json([
             'transaction' => true,
             'message' => 'mascotas disponibles',
@@ -121,9 +121,9 @@ class PublicacionController extends Controller
             'imagenes' => 'nullable|array', // Validación para el array de imágenes
             'imagenes.*' => 'required|string', // Validación para cada imagen en Base64
         ]);
-    
+
         $publicacion = Publicacion::create($validated);
-    
+
         if (!empty($validated['imagenes'])) {
             foreach ($validated['imagenes'] as $imagenBase64) {
                 // Decodificar la imagen y guardarla
@@ -131,20 +131,20 @@ class PublicacionController extends Controller
                 $fileName = uniqid() . '.jpg'; // Cambia la extensión si necesitas otro formato
                 $path = public_path('/uploads/mascotas/' . $fileName);
                 file_put_contents($path, $imageData);
-    
+
                 // Generar la ruta relativa
                 $relativePath = 'http://192.168.100.123:8000/uploads/mascotas/' . $fileName;
-    
+
                 ImagenMascota::create([
                     'id_publicacion' => $publicacion->id,
                     'urlIMG' => $relativePath,
                 ]);
             }
         }
-    
+
         return response()->json(['message' => 'Publicación creada exitosamente.', 'publicacion' => $publicacion], 201);
     }
-    
+
 
 
 
