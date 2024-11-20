@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 class PublicacionController extends Controller
 {
 
-    public function listarMascotasDisponibles(Request $request)
+      public function listarMascotasDisponibles(Request $request)
     {
         $especieId = $request->query('especie');
         $query = Publicacion::where('estado', true);
@@ -22,13 +22,17 @@ class PublicacionController extends Controller
     
         $publicaciones = $query->get(['id', 'titulo', 'edad', 'raza', 'ciudad_id', 'estado', 'especie_id'])
             ->map(function ($publicacion) {
+                $imagen = ImagenMascota::where('id_publicacion', $publicacion->id)
+                    ->pluck('urlIMG')
+                    ->first();
+    
                 return [
                     'id' => $publicacion->id,
                     'titulo' => $publicacion->titulo,
                     'edad' => $publicacion->edad,
                     'raza' => $publicacion->raza,
                     'ciudad' => $publicacion->ciudad ? $publicacion->ciudad->nombre : 'Desconocido',
-                    'imagen' => ImagenMascota::where('id_publicacion', $publicacion->id)->get('urlIMG')->first() ?? 'https://via.placeholder.com/150',
+                    'imagen' => $imagen ? ['urlIMG' => $imagen] : ['urlIMG' => 'https://via.placeholder.com/150'],
                     'disponible' => $publicacion->estado,
                     'especie' => $publicacion->especie_id,
                 ];
@@ -40,7 +44,6 @@ class PublicacionController extends Controller
             'data' => $publicaciones
         ], 200);
     }
-    
 
 
 
@@ -102,10 +105,52 @@ class PublicacionController extends Controller
     }
 
 
-
-
-
+    public function publicar(Request $request)
+    {
+        $validated = $request->validate([
+            'titulo' => 'required|string|max:255',
+            'descripcion' => 'required|string',
+            'raza' => 'required|string|max:255',
+            'edad' => 'required|integer|min:0',
+            'cantidad_machos' => 'required|integer|min:0',
+            'cantidad_hembras' => 'required|integer|min:0',
+            'telefono' => 'required|string|max:20',
+            'usuario_id' => 'required|exists:usuarios,id',
+            'ciudad_id' => 'required|exists:ciudades,id',
+            'especie_id' => 'required|exists:especies,id',
+            'imagenes' => 'nullable|array', // Validación para el array de imágenes
+            'imagenes.*' => 'required|string', // Validación para cada imagen en Base64
+        ]);
     
+        $publicacion = Publicacion::create($validated);
+    
+        if (!empty($validated['imagenes'])) {
+            foreach ($validated['imagenes'] as $imagenBase64) {
+                // Decodificar la imagen y guardarla
+                $imageData = base64_decode($imagenBase64);
+                $fileName = uniqid() . '.jpg'; // Cambia la extensión si necesitas otro formato
+                $path = public_path('/uploads/mascotas/' . $fileName);
+                file_put_contents($path, $imageData);
+    
+                // Generar la ruta relativa
+                $relativePath = 'http://192.168.100.123:8000/uploads/mascotas/' . $fileName;
+    
+                ImagenMascota::create([
+                    'id_publicacion' => $publicacion->id,
+                    'urlIMG' => $relativePath,
+                ]);
+            }
+        }
+    
+        return response()->json(['message' => 'Publicación creada exitosamente.', 'publicacion' => $publicacion], 201);
+    }
+    
+
+
+
+
+
+
     public function index()
     {
         $publicaciones = Publicacion::all();
