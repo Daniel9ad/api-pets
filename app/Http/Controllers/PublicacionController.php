@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Publicacion;
 use App\Models\ImagenMascota;
+use App\Models\Usuario;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -146,9 +147,87 @@ class PublicacionController extends Controller
     }
 
 
+    public function cambiarEstado($id)
+    {
+        $publicacion = Publicacion::find($id);
 
+        if (!$publicacion) {
+            return response()->json(['message' => 'Publicación no encontrada'], 404);
+        }
 
+        // Cambiar el estado (true <-> false)
+        $publicacion->estado = !$publicacion->estado;
+        $publicacion->save();
 
+        return response()->json([
+            'message' => 'Estado actualizado',
+            'estado' => $publicacion->estado,
+        ]);
+    }
+  
+
+  // Eliminar publicación
+  public function eliminarPublicacion($id)
+  {
+      $publicacion = Publicacion::find($id);
+
+      if (!$publicacion) {
+          return response()->json(['message' => 'Publicación no encontrada'], 404);
+      }
+
+      $publicacion->delete();
+
+      return response()->json(['message' => 'Publicación eliminada correctamente']);
+  }
+
+    public function obtenerPublicacionesPorUsuario($usuario_id)
+    {
+     
+        $usuario = Usuario::find($usuario_id);
+        if (!$usuario) {
+            return response()->json([
+                'transaction' => false,
+                'message' => 'Usuario no encontrado'
+            ], 404);
+        }
+    
+       
+        $publicaciones = Publicacion::where('usuario_id', $usuario_id)
+            ->get(['id', 'titulo', 'edad', 'raza', 'ciudad_id', 'estado', 'especie_id'])
+            ->map(function ($publicacion) {
+               
+                $imagen = ImagenMascota::where('id_publicacion', $publicacion->id)
+                    ->pluck('urlIMG')
+                    ->first();
+    
+                return [
+                    'id' => $publicacion->id,
+                    'titulo' => $publicacion->titulo,
+                    'edad' => $publicacion->edad,
+                    'raza' => $publicacion->raza,
+                    'ciudad' => $publicacion->ciudad ? $publicacion->ciudad->nombre : 'Desconocido',
+                    'imagen' => $imagen ? ['urlIMG' => $imagen] : ['urlIMG' => 'https://via.placeholder.com/150'],
+                    'disponible' => $publicacion->estado,
+                    'especie' => $publicacion->especie_id,
+                ];
+            });
+    
+      
+        if ($publicaciones->isEmpty()) {
+            return response()->json([
+                'transaction' => true,
+                'message' => 'El usuario no tiene publicaciones',
+                'publicaciones' => []
+            ], 200);
+        }
+    
+     
+        return response()->json([
+            'transaction' => true,
+            'message' => 'Publicaciones obtenidas exitosamente',
+            'data' => $publicaciones
+        ], 200);
+    }
 
 
     public function index()
