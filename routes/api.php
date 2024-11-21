@@ -29,3 +29,12 @@ Route::apiResource('usuarios', UsuarioController::class);
 Route::post('/crearpublicacion', [PublicacionController::class, 'publicar']);
 
 Route::post('/login', [AuthController::class, 'login']);
+
+Route::post('/comentario/comentar', [ComentarioController::class, 'createComentario']);
+Route::post('/comentario/responder', [ComentarioController::class, 'createRespuestaComentario']);
+Route::get('/comentario/publicacion/{id}', [ComentarioController::class, 'getComentariosPublicacion']);
+Route::get('/comentario/usuario/{id}', [ComentarioController::class, 'getComentariosUsuario']);
+Route::get('/comentario/{id}', [ComentarioController::class, 'getComentario']);
+Route::get('/comentario/{id}/respuestas', [ComentarioController::class, 'getRespuestasComentario']);
+Route::put('/comentario/{id}', [ComentarioController::class, 'updateComentario']);
+Route::delete('/comentario/{id}', [ComentarioController::class, 'deleteComentario']);
