@@ -165,20 +165,33 @@ class PublicacionController extends Controller
         ]);
     }
   
-
-  // Eliminar publicación
-  public function eliminarPublicacion($id)
-  {
-      $publicacion = Publicacion::find($id);
-
-      if (!$publicacion) {
-          return response()->json(['message' => 'Publicación no encontrada'], 404);
-      }
-
-      $publicacion->delete();
-
-      return response()->json(['message' => 'Publicación eliminada correctamente']);
-  }
+    public function eliminarPublicacion($id)
+    {
+        $publicacion = Publicacion::find($id);
+    
+        if (!$publicacion) {
+            return response()->json(['message' => 'Publicación no encontrada'], 404);
+        }
+    
+        // Eliminar las imágenes asociadas a la publicación
+        $imagenes = ImagenMascota::where('id_publicacion', $publicacion->id)->get();
+    
+        foreach ($imagenes as $imagen) {
+            // Eliminar el archivo de imagen del servidor
+            $filePath = public_path(parse_url($imagen->urlIMG, PHP_URL_PATH));
+            if (file_exists($filePath)) {
+                unlink($filePath); // Elimina el archivo físico
+            }
+            // Eliminar el registro de la base de datos
+            $imagen->delete(); // Elimina el registro de la tabla `imagen_mascotas`
+        }
+    
+        // Ahora elimina la publicación
+        $publicacion->delete();
+    
+        return response()->json(['message' => 'Publicación eliminada correctamente']);
+    }
+    
 
     public function obtenerPublicacionesPorUsuario($usuario_id)
     {
