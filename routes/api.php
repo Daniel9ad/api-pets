@@ -28,4 +28,10 @@ Route::apiResource('usuarios', UsuarioController::class);
 // para crear pubicaiones 
 Route::post('/crearpublicacion', [PublicacionController::class, 'publicar']);
 
+Route::get('/publicaciones/usuario/{usuario_id}', [PublicacionController::class, 'obtenerPublicacionesPorUsuario']);
+
+
+Route::put('/publicaciones/{id}/estado', [PublicacionController::class, 'cambiarEstado']);
+Route::delete('/publicaciones/{id}', [PublicacionController::class, 'eliminarPublicacion']);
+
 Route::post('/login', [AuthController::class, 'login']);
